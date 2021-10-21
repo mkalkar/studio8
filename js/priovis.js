@@ -130,6 +130,7 @@ PrioVis.prototype.updateVis = function(){
         })
 
     bars.exit().remove();
+    
 
     // Call axis function with the new domain
     vis.svg.select(".y-axis").call(vis.yAxis);
