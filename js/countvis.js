@@ -86,18 +86,23 @@ CountVis.prototype.initVis = function(){
 	// *** TO-DO ***
 	// Initialize brushing component
 	vis.currentBrushRegion = null;
-	
+	 vis.brush = d3.brushX()
+    .on("brush", vis.brushed);
 
 
 	// *** TO-DO ***
 	// Append brush component here
+	vis.svg.append("g")
+    .attr("class", "brush");
 
-
+		vis.svg.select(".brush").call(vis.brush)
+				.selectAll('rect')
+				.attr("height", vis.height);
 
 	// *** TO-DO ***
 	// Define zoom
 
-	
+
 
 
 	// (Filter, aggregate, modify data)
@@ -128,10 +133,18 @@ CountVis.prototype.wrangleData = function(){
 
 CountVis.prototype.updateVis = function(){
 	var vis = this;
-	
+
 	// *** TO-DO ***
 	// Call brush component here
-	
+	vis.brush.on("brush", function(){
+		if(vis.selection == null) {
+					 // No region selected (brush inactive)
+					 $(vis.myEventHandler).trigger("selectionChanged", vis.x.domain());
+			 } else {
+					 // User selected specific region
+					 $(vis.myEventHandler).trigger("selectionChanged", vis.selection.map(x.invert) );
+			 }
+	});
 
 	// *** TO-DO ***
 	// Call zoom component here
@@ -147,7 +160,7 @@ CountVis.prototype.updateVis = function(){
 		.attr("d", vis.area);
 
 
-	// Call axis functions with the new domain 
+	// Call axis functions with the new domain
 	vis.svg.select(".x-axis").call(vis.xAxis);
 	vis.svg.select(".y-axis").call(vis.yAxis);
 

@@ -152,6 +152,9 @@ AgeVis.prototype.onSelectionChange = function(selectionStart, selectionEnd){
 
     // *** TO-DO ***
     // Filter data depending on selected time period (brush)
+    vis.displayData = vis.data.filter(function(d) {
+		return d.time >= selectionStart && d.time <= selectionEnd
+	  });
 
 	vis.wrangleData();
 }
