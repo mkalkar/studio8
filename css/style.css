@@ -18,9 +18,9 @@ h2 {
 }
 
 .brush {
-	fill: #ccc;
-	fill-opacity: .5;
-	pointer-events: none;
+    fill: #ccc;
+    fill-opacity: .5;
+    pointer-events: none;
 }
 
 .axis line,

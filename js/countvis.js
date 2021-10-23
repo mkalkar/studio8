@@ -35,7 +35,8 @@ CountVis.prototype.initVis = function(){
 
     // Scales and axes
     vis.x = d3.scaleTime()
-        .range([0, vis.width]);
+        .range([0, vis.width])
+				.domain(d3.extent(vis.data, function(d) { return d.Year; }));
 
     vis.y = d3.scaleLinear()
         .range([vis.height, 0]);
@@ -84,26 +85,38 @@ CountVis.prototype.initVis = function(){
         .y1(function(d) { return vis.y(d.count); });
 
 	// *** TO-DO ***
-	// Initialize brushing component
-	vis.currentBrushRegion = null;
-	 vis.brush = d3.brushX()
-    .on("brush", vis.brushed);
 
+	// Initialize brushing component
+	vis.brush = d3.brushX()
+	.on("brush", function({selection}){
+
+			if(selection == null) {
+					// No region selected (brush inactive)
+					$(vis.myEventHandler).trigger("selectionChanged", vis.x.domain());
+			} else {
+					// User selected specific region
+					$(vis.myEventHandler).trigger("selectionChanged", selection.map(vis.x.invert) );
+			}
+	});
 
 	// *** TO-DO ***
 	// Append brush component here
 	vis.svg.append("g")
     .attr("class", "brush");
 
-		vis.svg.select(".brush").call(vis.brush)
-				.selectAll('rect')
-				.attr("height", vis.height);
+		//vis.brush
 
 	// *** TO-DO ***
 	// Define zoom
 
-
-
+	vis.zoom = d3.zoom()
+	    // Subsequently, you can listen to all zooming events
+	    .on("zoom", function(event, d){
+	        // Do something
+					vis.updateVis();
+	    })
+	    // Specify the zoom scale's allowed range
+	    .scaleExtent([1,20]);
 
 	// (Filter, aggregate, modify data)
 	vis.wrangleData();
@@ -136,15 +149,11 @@ CountVis.prototype.updateVis = function(){
 
 	// *** TO-DO ***
 	// Call brush component here
-	vis.brush.on("brush", function(){
-		if(vis.selection == null) {
-					 // No region selected (brush inactive)
-					 $(vis.myEventHandler).trigger("selectionChanged", vis.x.domain());
-			 } else {
-					 // User selected specific region
-					 $(vis.myEventHandler).trigger("selectionChanged", vis.selection.map(x.invert) );
-			 }
-	});
+	vis.svg.select(".brush").call(vis.brush)
+  .selectAll('rect')
+    .attr("height", vis.height);
+
+
 
 	// *** TO-DO ***
 	// Call zoom component here
